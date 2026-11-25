@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>TrustKart — Smart Multi-Store Shopping</title>
+  <style>
+    :root {
+      --bg: #f4f7fc;
+      --surface: #ffffff;
+      --soft: #f8fafc;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --text: #0f172a;
+      --sub: #475569;
+      --muted: #64748b;
+      --primary: #2563eb;
+      --primary-soft: #eff6ff;
+      --green: #059669;
+      --green-soft: #ecfdf5;
+      --green-border: #a7f3d0;
+      --amber: #d97706;
+      --amber-soft: #fffbeb;
+      --amber-border: #fde68a;
+      --red: #e11d48;
+      --red-soft: #fff1f2;
+      --red-border: #fecdd3;
+      --purple: #7c3aed;
+      --purple-soft: #f5f3ff;
+      --purple-border: #ddd6fe;
+      --sky: #0284c7;
+      --sky-soft: #f0f9ff;
+      --sky-border: #bae6fd;
+      --shadow-sm: 0 3px 10px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 12px 32px rgba(15, 23, 42, 0.09);
+      --shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.18);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.08), transparent 40%),
+        radial-gradient(circle at 100% 15%, rgba(236, 72, 153, 0.07), transparent 38%),
+        radial-gradient(circle at 50% 100%, rgba(16, 185, 129, 0.06), transparent 40%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.45;
+    }
+
+    .hidden { display: none !important; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.93) translateY(12px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    @keyframes pulseGreen {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.55); }
+      70% { box-shadow: 0 0 0 7px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    @keyframes pulseAmber {
+      0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5); }
+      70% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+    }
+    @keyframes bump {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.04); }
+      100% { transform: scale(1); }
+    }
+    @keyframes gradientFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .fade-up { animation: fadeUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .bump { animation: bump 0.28s ease; }
+    .shake { animation: shake 0.35s ease; }
+
+    .dot-live {
+      width: 8px; height: 8px; border-radius: 50%; background: #10b981;
+      display: inline-block; animation: pulseGreen 1.8s infinite; flex-shrink: 0;
+    }
+    .dot-off {
+      width: 8px; height: 8px; border-radius: 50%; background: #e11d48;
+      display: inline-block; flex-shrink: 0;
+    }
+    .spinner {
+      width: 15px; height: 15px; border: 2px solid rgba(255,255,255,0.45);
+      border-top-color: #fff; border-radius: 50%;
+      display: inline-block; animation: spin 0.7s linear infinite; flex-shrink: 0;
+    }
+
+    button {
+      font-family: inherit; cursor: pointer; border: 1px solid transparent;
+      border-radius: 13px; font-weight: 700; display: inline-flex;
+      align-items: center; justify-content: center; gap: 7px;
+      transition: transform 0.14s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    button:active:not(:disabled) { transform: scale(0.96); }
+    button:disabled { opacity: 0.48; cursor: not-allowed; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb, #6366f1);
+      color: #fff; padding: 12px 18px; font-size: 14px;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.28);
+    }
+    .btn-green {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: #fff; padding: 12px 18px; font-size: 14px;
+      box-shadow: 0 8px 20px rgba(5, 150, 105, 0.28);
+    }
+    .btn-secondary {
+      background: #fff; color: var(--text); border-color: var(--border-strong);
+      padding: 9px 14px; font-size: 13px; box-shadow: var(--shadow-sm);
+    }
+    .btn-red-soft {
+      background: var(--red-soft); color: #be123c; border-color: var(--red-border);
+      padding: 11px 16px; font-size: 13px;
+    }
+    .btn-sm { padding: 7px 11px; font-size: 12px; border-radius: 10px; }
+    .btn-full { width: 100%; }
+
+    .auth-screen {
+      min-height: 100vh; width: 100%; display: flex; align-items: center; justify-content: center;
+      padding: 18px 14px;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(37, 99, 235, 0.14), transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(168, 85, 247, 0.14), transparent 45%),
+        #f3f6fd;
+    }
+    .auth-card {
+      width: 100%; max-width: 440px; background: #fff; border: 1px solid var(--border);
+      border-radius: 26px; padding: 26px 22px; box-shadow: var(--shadow-lg);
+      animation: popIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .logo-badge {
+      width: 44px; height: 44px; border-radius: 14px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed, #ec4899);
+      background-size: 200% 200%; animation: gradientFlow 5s ease infinite;
+      color: #fff; font-weight: 900; font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 10px 24px rgba(37, 99, 235, 0.3); flex-shrink: 0;
+    }
+    .auth-tabs {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+      background: #f1f5f9; padding: 5px; border-radius: 14px; margin: 18px 0;
+    }
+    .auth-tab {
+      background: transparent; color: var(--sub); padding: 9px;
+      border-radius: 10px; font-size: 13px; border: none;
+    }
+    .auth-tab.active {
+      background: #fff; color: var(--primary);
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+    }
+    .form-group { margin-bottom: 13px; }
+    .field-label {
+      display: block; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      color: var(--muted); margin-bottom: 5px;
+    }
+    input[type="text"], input[type="email"], input[type="tel"], input[type="password"], input[type="search"] {
+      width: 100%; max-width: 100%; background: var(--soft); border: 1.5px solid var(--border);
+      color: var(--text); border-radius: 12px; padding: 11px 14px;
+      font-size: 14px; outline: none; transition: all 0.2s ease;
+    }
+    input:focus {
+      background: #fff; border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+    .error-box {
+      background: var(--red-soft); color: #be123c; border: 1px solid var(--red-border);
+      border-radius: 12px; padding: 10px 12px; font-size: 12px; font-weight: 600;
+      margin-bottom: 12px; word-break: break-word;
+    }
+
+    header {
+      position: sticky; top: 0; z-index: 40; width: 100%; max-width: 100%;
+      background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .container { width: 100%; max-width: 1220px; margin: 0 auto; padding: 0 16px; }
+    .header-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 8px; padding: 10px 0; min-width: 0;
+    }
+    .user-pill {
+      max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .nav-tabs { display: flex; gap: 6px; overflow-x: auto; max-width: 100%; }
+    .nav-tab {
+      background: transparent; color: var(--sub); padding: 9px 14px;
+      font-size: 13px; border-radius: 12px 12px 0 0; border: none;
+      border-bottom: 3px solid transparent; white-space: nowrap;
+    }
+    .nav-tab.active {
+      color: var(--primary); background: var(--primary-soft);
+      border-bottom-color: var(--primary);
+    }
+    .pill-badge {
+      background: var(--primary); color: #fff; font-size: 11px;
+      padding: 1px 7px; border-radius: 999px; font-weight: 800;
+    }
+
+    .hero-banner {
+      width: 100%; max-width: 100%;
+      background: linear-gradient(125deg, #2563eb 0%, #6366f1 50%, #ec4899 100%);
+      background-size: 200% 200%; animation: gradientFlow 9s ease infinite;
+      color: #fff; border-radius: 20px; padding: 20px 22px;
+      box-shadow: 0 14px 34px rgba(37, 99, 235, 0.24); margin-bottom: 18px;
+    }
+
+    main { padding: 18px 0 110px; width: 100%; max-width: 100%; }
+
+    .shop-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 2.15fr) minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+      width: 100%;
+    }
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      width: 100%;
+    }
+    .stack { display: flex; flex-direction: column; gap: 14px; min-width: 0; max-width: 100%; }
+    .row-between {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 10px; min-width: 0; max-width: 100%;
+    }
+    .row-gap { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
+
+    .filter-toolbar {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 10px; width: 100%; min-width: 0;
+    }
+    .chip-row {
+      display: flex; gap: 7px; overflow-x: auto; max-width: 100%;
+      padding-bottom: 4px; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+    }
+    .chip-row::-webkit-scrollbar { display: none; }
+    .chip {
+      background: #fff; color: var(--sub); border: 1px solid var(--border-strong);
+      border-radius: 999px; padding: 8px 14px; font-size: 12px; white-space: nowrap; flex-shrink: 0;
+    }
+    .chip.active {
+      background: var(--primary); color: #fff; border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
+    }
+    .search-wrap { width: 100%; max-width: 260px; min-width: 0; }
+
+    .product-card {
+      background: #fff; border: 1px solid var(--border); border-radius: 20px;
+      overflow: hidden; display: flex; flex-direction: column; min-width: 0; max-width: 100%;
+      box-shadow: var(--shadow-sm);
+    }
+    .product-card.offline { opacity: 0.72; border-color: var(--red-border); }
+
+    .img-stage {
+      height: 160px; width: 100%; position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .img-stage img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .img-overlay-top {
+      position: absolute; top: 10px; left: 10px; right: 10px;
+      display: flex; align-items: center; justify-content: space-between; gap: 6px;
+      pointer-events: none;
+    }
+    .fallback-art {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 6px; width: 100%; height: 100%;
+    }
+    .fallback-icon {
+      width: 64px; height: 64px; border-radius: 18px; background: rgba(255,255,255,0.9);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.1);
+    }
+
+    .product-body {
+      padding: 14px 15px 15px; display: flex; flex-direction: column;
+      gap: 10px; flex: 1; min-width: 0;
+    }
+    .price { font-size: 19px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
+
+    .stock-bar { height: 7px; width: 100%; background: #e2e8f0; border-radius: 999px; overflow: hidden; margin-top: 5px; }
+    .stock-bar-fill { height: 100%; border-radius: 999px; transition: width 0.4s ease; }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px; max-width: 100%;
+      padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 700;
+      border: 1px solid transparent;
+    }
+    .b-white { background: rgba(255, 255, 255, 0.94); color: #0f172a; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .b-green { background: var(--green-soft); color: #047857; border-color: var(--green-border); }
+    .b-red { background: var(--red-soft); color: #be123c; border-color: var(--red-border); }
+    .b-sky { background: var(--sky-soft); color: #0369a1; border-color: var(--sky-border); }
+    .b-indigo { background: var(--primary-soft); color: #1d4ed8; border-color: #bfdbfe; }
+    .b-amber { background: var(--amber-soft); color: #b45309; border-color: var(--amber-border); }
+    .b-purple { background: var(--purple-soft); color: #6d28d9; border-color: var(--purple-border); }
+    .b-gray { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+
+    .qty-ctrl {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--primary-soft); border: 1.5px solid #bfdbfe;
+      border-radius: 13px; padding: 4px; width: 100%;
+    }
+    .qty-btn { width: 34px; height: 34px; border-radius: 10px; font-size: 16px; }
+
+    .card {
+      background: #fff; border: 1px solid var(--border); border-radius: 20px;
+      padding: 16px; box-shadow: var(--shadow-sm); min-width: 0; max-width: 100%;
+    }
+    .card-soft {
+      background: var(--soft); border: 1px solid var(--border); border-radius: 14px;
+      padding: 12px; min-width: 0; max-width: 100%;
+    }
+    .sticky-cart { position: sticky; top: 118px; }
+
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(15, 23, 42, 0.62); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 14px; overflow-y: auto;
+    }
+    .modal-box {
+      width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto;
+      background: #fff; border-radius: 24px; padding: 22px; box-shadow: var(--shadow-lg);
+      animation: popIn 0.22s cubic-bezier(0.16, 1, 0.3, 1); margin: auto;
+    }
+    .timer-pill {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--amber-soft); color: #b45309; border: 1.5px solid var(--amber-border);
+      padding: 7px 13px; border-radius: 999px; font-weight: 800; font-size: 13px;
+      animation: pulseAmber 2s infinite; white-space: nowrap;
+    }
+
+    .mobile-bar {
+      display: none; position: fixed; bottom: 10px; left: 10px; right: 10px;
+      max-width: calc(100vw - 20px); z-index: 60;
+      background: linear-gradient(135deg, #0f172a, #1e293b); color: #fff;
+      border-radius: 16px; padding: 11px 14px;
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.35);
+      align-items: center; justify-content: space-between; gap: 10px;
+    }
+
+    .toast {
+      position: fixed; top: 14px; right: 14px; z-index: 10000;
+      max-width: 390px; padding: 12px 16px; border-radius: 14px;
+      font-size: 13px; font-weight: 700; box-shadow: var(--shadow-lg);
+      animation: popIn 0.22s ease; word-break: break-word;
+    }
+    .toast-ok { background: #065f46; color: #ecfdf5; border: 1px solid #10b981; }
+    .toast-err { background: #9f1239; color: #fff1f2; border: 1px solid #fb7185; }
+
+    .text-xs { font-size: 12px; }
+    .text-sm { font-size: 13px; }
+    .font-bold { font-weight: 700; }
+    .muted { color: var(--muted); }
+    .c-green { color: var(--green); }
+    .c-red { color: var(--red); }
+    .c-primary { color: var(--primary); }
+    .c-purple { color: var(--purple); }
+    .c-amber { color: var(--amber); }
+
+    @media (max-width: 920px) {
+      .shop-layout { grid-template-columns: minmax(0, 1fr); }
+      .sticky-cart { position: static; }
+      .search-wrap { max-width: 100%; }
+      .mobile-bar.show { display: flex; }
+    }
+    @media (max-width: 600px) {
+      .container { padding: 0 12px; }
+      .catalog-grid { grid-template-columns: minmax(0, 1fr); }
+      .hero-banner { padding: 16px; border-radius: 16px; }
+      .hero-banner h2 { font-size: 19px !important; }
+      .toast { left: 12px; right: 12px; max-width: none; }
+      .user-pill { max-width: 95px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- SIGN UP / LOGIN SCREEN -->
+  <section id="authScreen" class="auth-screen">
+    <div class="auth-card">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div class="logo-badge">TK</div>
+        <div>
+          <h1 style="font-size: 22px; font-weight: 900; letter-spacing: -0.02em;">TrustKart</h1>
+          <p class="text-xs muted">Multi-Store Shopping &bull; Zero Overselling Guarantee</p>
+        </div>
+      </div>
+
+      <div class="auth-tabs">
+        <button type="button" id="authTab-signup" class="auth-tab active" onclick="switchAuthMode('signup')">Create Account</button>
+        <button type="button" id="authTab-login" class="auth-tab" onclick="switchAuthMode('login')">Login</button>
+      </div>
+
+      <div id="authError" class="error-box hidden"></div>
+
+      <form id="signupForm" onsubmit="handleSignup(event)">
+        <div class="form-group">
+          <label class="field-label">Full Name</label>
+          <input id="suName" type="text" placeholder="e.g. Rohan Verma" required />
+        </div>
+        <div class="form-group">
+          <label class="field-label">Email Address</label>
+          <input id="suEmail" type="email" placeholder="e.g. rohan@gmail.com" required />
+        </div>
+        <div class="form-group">
+          <label class="field-label">Mobile Number</label>
+          <input id="suPhone" type="tel" placeholder="e.g. 9876543210" required />
+        </div>
+        <div class="form-group">
+          <label class="field-label">Password</label>
+          <input id="suPass" type="password" placeholder="Create password (min 4 chars)" required />
+        </div>
+        <button id="suBtn" type="submit" class="btn-primary btn-full" style="margin-top: 6px; padding: 13px;">
+          Sign Up &amp; Start Shopping &rarr;
+        </button>
+      </form>
+
+      <form id="loginForm" class="hidden" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="field-label">Email Address</label>
+          <input id="liEmail" type="email" placeholder="Enter your registered email" required />
+        </div>
+        <div class="form-group">
+          <label class="field-label">Password</label>
+          <input id="liPass" type="password" placeholder="Enter your password" required />
+        </div>
+        <button id="liBtn" type="submit" class="btn-primary btn-full" style="margin-top: 6px; padding: 13px;">
+          Login to TrustKart &rarr;
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- MAIN CUSTOMER APP -->
+  <div id="appShell" class="hidden">
+    <header>
+      <div class="container">
+        <div class="header-row">
+          <div style="display:flex; align-items:center; gap:9px; min-width:0;">
+            <div class="logo-badge" style="width: 34px; height: 34px; font-size: 13px; border-radius: 10px;">TK</div>
+            <div style="min-width:0;">
+              <div class="font-bold" style="font-size: 15px; line-height: 1.15;">TrustKart</div>
+              <div class="text-xs muted" style="display:flex; align-items:center; gap:5px;">
+                <span class="dot-live" style="width:6px;height:6px;"></span> Live Sync
+              </div>
+            </div>
+          </div>
+
+          <div class="row-gap" style="flex-wrap: nowrap; flex-shrink: 0;">
+            <span id="headerUser" class="badge b-indigo user-pill" style="padding: 5px 10px;"></span>
+            <button onclick="logout()" class="btn-secondary btn-sm">Logout</button>
+          </div>
+        </div>
+
+        <div class="nav-tabs">
+          <button id="nav-shop" class="nav-tab active" onclick="switchPage('shop')">Shop Stores</button>
+          <button id="nav-orders" class="nav-tab" onclick="switchPage('orders')">
+            My Orders <span id="ordersCountBadge" class="pill-badge hidden">0</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <section id="page-shop" class="fade-up">
+        <div class="hero-banner">
+          <span class="badge" style="background: rgba(255,255,255,0.22); color:#fff; margin-bottom: 8px;">3 Verified Stores &bull; 10 Products</span>
+          <h2 style="font-size: 22px; font-weight: 900; line-height: 1.2;">One Cart. Multiple Stores. Zero Overselling.</h2>
+          <p style="font-size: 13px; opacity: 0.92; margin-top: 6px; max-width: 650px;">
+            Shop across Electronics Hub, Fashion &amp; Clothing, and General &amp; Lifestyle Mart. Stock locks for 60 seconds at checkout and splits safely per store.
+          </p>
+        </div>
+
+        <div class="shop-layout">
+          <div class="stack">
+            <div class="filter-toolbar">
+              <div class="chip-row" id="storeChips">
+                <button class="chip active" data-store="ALL" onclick="setStoreFilter('ALL')">All 3 Stores</button>
+                <button class="chip" data-store="STORE-A" onclick="setStoreFilter('STORE-A')">Electronics Hub</button>
+                <button class="chip" data-store="STORE-B" onclick="setStoreFilter('STORE-B')">Fashion &amp; Clothing</button>
+                <button class="chip" data-store="STORE-C" onclick="setStoreFilter('STORE-C')">General &amp; Lifestyle</button>
+              </div>
+              <div class="search-wrap">
+                <input id="searchInput" type="search" placeholder="Search iPhone, Nike, Levi's..." oninput="renderCatalog()" style="padding: 9px 13px; font-size: 13px;" />
+              </div>
+            </div>
+
+            <div id="catalogGrid" class="catalog-grid"></div>
+          </div>
+
+          <div id="cartPanel" class="card sticky-cart">
+            <div class="row-between" style="margin-bottom: 12px;">
+              <div>
+                <h3 class="font-bold" style="font-size: 17px;">Shopping Cart</h3>
+                <p class="text-xs muted">Auto-splits across stores at checkout</p>
+              </div>
+              <button onclick="clearCart()" class="btn-secondary btn-sm">Clear</button>
+            </div>
+
+            <div id="cartItems" class="stack" style="gap: 8px;"></div>
+
+            <div style="border-top: 1px solid var(--border); margin-top: 14px; padding-top: 14px;" class="stack">
+              <div class="row-between">
+                <span class="text-sm muted font-bold">Total Payable</span>
+                <span id="cartTotal" style="font-size: 22px; font-weight: 900; color: var(--primary);">&#8377;0</span>
+              </div>
+              <button id="checkoutBtn" onclick="startCheckout()" class="btn-primary btn-full" style="padding: 13px; font-size: 14px;">
+                Proceed to Checkout &rarr;
+              </button>
+              <p class="text-xs muted" style="text-align: center;">
+                Stock locks for <strong>60 seconds</strong> once you proceed.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-orders" class="hidden fade-up">
+        <div class="row-between" style="margin-bottom: 16px;">
+          <div>
+            <h2 style="font-size: 20px; font-weight: 900;">My Orders &amp; Live Split Tracking</h2>
+            <p class="text-xs muted">Updates live as stores dispatch items or process partial refunds.</p>
+          </div>
+          <button onclick="switchPage('shop')" class="btn-secondary btn-sm">+ Shop More</button>
+        </div>
+        <div id="myOrdersList" class="stack"></div>
+      </section>
+    </main>
+
+    <div id="mobileCartBar" class="mobile-bar">
+      <div style="min-width:0;">
+        <div id="mobileBarCount" style="font-size: 12px; color: #cbd5e1;">0 items</div>
+        <div id="mobileBarTotal" style="font-size: 17px; font-weight: 900;">&#8377;0</div>
+      </div>
+      <button onclick="scrollToCart()" class="btn-primary" style="padding: 10px 15px; flex-shrink: 0;">Checkout &rarr;</button>
+    </div>
+  </div>
+
+  <!-- PAYMENT MODAL (ONLY PAY NOW & CANCEL) -->
+  <div id="paymentModal" class="modal-backdrop hidden">
+    <div class="modal-box">
+      <div class="row-between" style="margin-bottom: 12px;">
+        <div>
+          <span class="badge b-sky">Stock Locked</span>
+          <h3 style="font-size: 19px; font-weight: 900; margin-top: 6px;">Complete Payment</h3>
+        </div>
+        <div id="modalCountdown" class="timer-pill">01:00 left</div>
+      </div>
+
+      <p class="text-xs muted" style="margin-bottom: 14px;">
+        Your items are reserved for 60 seconds. Tap <strong>Pay Now</strong> to confirm or <strong>Cancel</strong> to release stock.
+      </p>
+
+      <div id="modalOrderSummary" class="card-soft stack" style="gap: 8px; margin-bottom: 16px;"></div>
+
+      <div class="row-between" style="background: var(--primary-soft); border: 1px solid #bfdbfe; border-radius: 14px; padding: 12px 14px; margin-bottom: 18px;">
+        <span class="text-sm font-bold" style="color: #1e3a8a;">Total Amount</span>
+        <span id="modalPayAmount" style="font-size: 21px; font-weight: 900; color: var(--primary);">&#8377;0</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <button id="modalCancelBtn" onclick="cancelActiveCheckout()" class="btn-red-soft btn-full">Cancel</button>
+        <button id="modalPayBtn" onclick="payActiveCheckout()" class="btn-green btn-full">Pay Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ORDER BLOCKED / ERROR MODAL -->
+  <div id="blockedModal" class="modal-backdrop hidden">
+    <div class="modal-box shake" style="text-align: center;">
+      <div style="width: 58px; height: 58px; border-radius: 18px; background: var(--red-soft); border: 2px solid var(--red-border); color: var(--red); font-size: 26px; display:flex; align-items:center; justify-content:center; margin: 0 auto 14px;">
+        &#10006;
+      </div>
+      <span id="blockedBadge" class="badge b-red">Stock Unavailable</span>
+      <h3 id="blockedTitle" style="font-size: 19px; font-weight: 900; margin-top: 8px;">Order Blocked — Out of Stock!</h3>
+      <p id="blockedMsg" class="text-sm muted" style="margin: 10px 0 18px; word-break: break-word;"></p>
+      <button onclick="closeBlockedModal()" class="btn-primary btn-full">Back to Store</button>
+    </div>
+  </div>
+
+  <script>
+    let customer = null;
+    let state = { stores: [], products: [], my_orders: [] };
+    let cart = {};
+    let storeFilter = "ALL";
+    let activeCheckout = null;
+    let pollHandle = null;
+    let lastProductsFp = "";
+    let lastOrdersFp = "";
+    let clockOffsetMs = 0;
+    let isBusy = false;
+    let pollInFlight = false;
+    let expireRefreshPending = false;
+
+    const FALLBACK_META = {
+      "PROD-1": { bg: "linear-gradient(135deg,#dbeafe,#eff6ff)", stroke: "#1d4ed8", svg: `<rect x="6" y="2" width="12" height="20" rx="3"/><line x1="10" y1="5" x2="14" y2="5"/><circle cx="12" cy="18.5" r="0.8" fill="#1d4ed8"/>` },
+      "PROD-2": { bg: "linear-gradient(135deg,#ede9fe,#f5f3ff)", stroke: "#6d28d9", svg: `<path d="M4 13a8 8 0 0 1 16 0"/><rect x="3" y="13" width="4" height="7" rx="2"/><rect x="17" y="13" width="4" height="7" rx="2"/>` },
+      "PROD-3": { bg: "linear-gradient(135deg,#e0f2fe,#f0f9ff)", stroke: "#0369a1", svg: `<circle cx="9" cy="10" r="3"/><path d="M9 13v6"/><circle cx="15" cy="10" r="3"/><path d="M15 13v6"/>` },
+      "PROD-4": { bg: "linear-gradient(135deg,#f1f5f9,#e2e8f0)", stroke: "#334155", svg: `<polygon points="13 2 4 14 11 14 10 22 20 10 13 10 13 2"/>` },
+      "PROD-5": { bg: "linear-gradient(135deg,#fef3c7,#fffbeb)", stroke: "#b45309", svg: `<path d="M7 4l5 3 5-3 4 4-3 3v9H6v-9L3 8l4-4z"/><line x1="12" y1="7" x2="12" y2="20"/>` },
+      "PROD-6": { bg: "linear-gradient(135deg,#fce7f3,#fdf2f8)", stroke: "#be185d", svg: `<path d="M8 5a4 4 0 0 1 8 0l4 4-3 3v8H7v-8L4 9l4-4z"/>` },
+      "PROD-7": { bg: "linear-gradient(135deg,#e0e7ff,#eef2ff)", stroke: "#4338ca", svg: `<path d="M6 4l6 3 6-3 3 4-3 3v9H6v-9L3 8l3-4z"/><line x1="12" y1="7" x2="12" y2="20"/>` },
+      "PROD-8": { bg: "linear-gradient(135deg,#ffe4e6,#fff1f2)", stroke: "#be123c", svg: `<path d="M4 15.5V12l4-4 3 3c2 1 5 1 8 2.5 1 .5 1.5 1.5 1.5 2.5v1H4z"/><line x1="4" y1="18" x2="20.5" y2="18"/>` },
+      "PROD-9": { bg: "linear-gradient(135deg,#d1fae5,#ecfdf5)", stroke: "#047857", svg: `<rect x="8" y="6" width="8" height="15" rx="3"/><path d="M9 6V3h6v3"/>` },
+      "PROD-10": { bg: "linear-gradient(135deg,#fae8ff,#fdf4ff)", stroke: "#86198f", svg: `<circle cx="12" cy="12" r="6"/><path d="M9 6l1-3h4l1 3"/><path d="M9 18l1 3h4l1-3"/><polyline points="12 9 12 12 14 12"/>` }
+    };
+
+    function escapeHtml(s) {
+      return String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+
+    function formatINR(v) {
+      return "&#8377;" + Number(v || 0).toLocaleString("en-IN", { maximumFractionDigits: 2 });
+    }
+
+    function showToast(msg, isError = false) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.className = `toast ${isError ? "toast-err" : "toast-ok"}`;
+      clearTimeout(window._toastT);
+      window._toastT = setTimeout(() => t.classList.add("hidden"), 4200);
+    }
+
+    // Tunnel-resilient fetch with clean abort timeout and optional idempotent retries
+    async function apiCall(url, options = {}, timeoutMs = 10000, retries = 0) {
+      let lastErr;
+      for (let attempt = 0; attempt <= retries; attempt++) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+          const res = await fetch(url, {
+            cache: "no-store",
+            headers: { "Content-Type": "application/json" },
+            signal: controller.signal,
+            ...options,
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            const msg = data.detail || (res.status === 504 || res.status === 502
+              ? `Tunnel busy (${res.status}). Retrying...`
+              : `Request failed (${res.status})`);
+            const err = new Error(msg);
+            err.status = res.status;
+            if ((res.status === 502 || res.status === 504) && attempt < retries) {
+              lastErr = err;
+              continue;
+            }
+            throw err;
+          }
+          return data;
+        } catch (e) {
+          if (e.name === "AbortError") {
+            lastErr = new Error("Tunnel connection stalled. Please tap once more.");
+            if (attempt < retries) continue;
+            throw lastErr;
+          }
+          if (!e.status && attempt < retries) {
+            lastErr = e;
+            continue;
+          }
+          throw e;
+        } finally {
+          clearTimeout(timer);
+        }
+      }
+      throw lastErr;
+    }
+
+    function switchAuthMode(mode) {
+      document.getElementById("authError").classList.add("hidden");
+      document.getElementById("signupForm").classList.toggle("hidden", mode !== "signup");
+      document.getElementById("loginForm").classList.toggle("hidden", mode !== "login");
+      document.getElementById("authTab-signup").classList.toggle("active", mode === "signup");
+      document.getElementById("authTab-login").classList.toggle("active", mode === "login");
+    }
+
+    async function handleSignup(e) {
+      e.preventDefault();
+      const errBox = document.getElementById("authError");
+      errBox.classList.add("hidden");
+      const btn = document.getElementById("suBtn");
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner"></span> Creating account...`;
+      try {
+        const res = await apiCall("/api/auth/signup", {
+          method: "POST",
+          body: JSON.stringify({
+            name: document.getElementById("suName").value,
+            email: document.getElementById("suEmail").value,
+            phone: document.getElementById("suPhone").value,
+            password: document.getElementById("suPass").value,
+          }),
+        }, 12000, 1);
+        enterCustomerApp(res.customer);
+        showToast(res.message);
+      } catch (err) {
+        errBox.textContent = err.message;
+        errBox.classList.remove("hidden");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `Sign Up &amp; Start Shopping &rarr;`;
+      }
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const errBox = document.getElementById("authError");
+      errBox.classList.add("hidden");
+      const btn = document.getElementById("liBtn");
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner"></span> Logging in...`;
+      try {
+        const res = await apiCall("/api/auth/login", {
+          method: "POST",
+          body: JSON.stringify({
+            email: document.getElementById("liEmail").value,
+            password: document.getElementById("liPass").value,
+          }),
+        }, 12000, 1);
+        enterCustomerApp(res.customer);
+        showToast(res.message);
+      } catch (err) {
+        errBox.textContent = err.message;
+        errBox.classList.remove("hidden");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `Login to TrustKart &rarr;`;
+      }
+    }
+
+    // Gentle DevTunnels-friendly sequential polling (5s, pauses when hidden or modal is open)
+    function scheduleNextPoll() {
+      clearTimeout(pollHandle);
+      if (!customer) return;
+      pollHandle = setTimeout(async () => {
+        const modalOpen = !document.getElementById("paymentModal").classList.contains("hidden");
+        if (!document.hidden && !isBusy && !modalOpen && !pollInFlight) {
+          await loadCustomerState(true, false);
+        }
+        scheduleNextPoll();
+      }, 5000);
+    }
+
+    function enterCustomerApp(cust) {
+      customer = cust;
+      localStorage.setItem("trustkart_customer", JSON.stringify(cust));
+      document.getElementById("headerUser").textContent = cust.name;
+      document.getElementById("authScreen").classList.add("hidden");
+      document.getElementById("appShell").classList.remove("hidden");
+      loadCustomerState(false, true).then(scheduleNextPoll);
+    }
+
+    function logout() {
+      customer = null;
+      cart = {};
+      activeCheckout = null;
+      lastProductsFp = "";
+      lastOrdersFp = "";
+      localStorage.removeItem("trustkart_customer");
+      clearTimeout(pollHandle);
+      document.getElementById("paymentModal").classList.add("hidden");
+      document.getElementById("appShell").classList.add("hidden");
+      document.getElementById("authScreen").classList.remove("hidden");
+      switchAuthMode("login");
+    }
+
+    function switchPage(page) {
+      document.getElementById("page-shop").classList.toggle("hidden", page !== "shop");
+      document.getElementById("page-orders").classList.toggle("hidden", page !== "orders");
+      document.getElementById("nav-shop").classList.toggle("active", page === "shop");
+      document.getElementById("nav-orders").classList.toggle("active", page === "orders");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      loadCustomerState(true, true);
+    }
+
+    function setStoreFilter(st) {
+      storeFilter = st;
+      document.querySelectorAll("#storeChips .chip").forEach((c) => {
+        c.classList.toggle("active", c.dataset.store === st);
+      });
+      renderCatalog();
+    }
+
+    function scrollToCart() {
+      document.getElementById("cartPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    async function loadCustomerState(silent = false, forceRender = false) {
+      if (!customer || pollInFlight) return;
+      pollInFlight = true;
+      try {
+        const data = await apiCall(`/api/customer/state?customer_id=${encodeURIComponent(customer.id)}`, {}, 8000, 0);
+        if (data.server_time) {
+          clockOffsetMs = new Date(data.server_time).getTime() - Date.now();
+        }
+        state = data;
+        expireRefreshPending = false;
+
+        const pFp = JSON.stringify(data.products || []);
+        const oFp = JSON.stringify(data.my_orders || []);
+
+        if (forceRender || pFp !== lastProductsFp) {
+          lastProductsFp = pFp;
+          renderCatalog();
+          renderCart();
+        }
+        if (forceRender || oFp !== lastOrdersFp) {
+          lastOrdersFp = oFp;
+          renderMyOrders();
+        }
+      } catch (err) {
+        if (!silent) showToast(err.message, true);
+      } finally {
+        pollInFlight = false;
+      }
+    }
+
+    function fallbackHtml(pid, brand) {
+      const f = FALLBACK_META[pid] || { bg: "linear-gradient(135deg,#e0e7ff,#f8fafc)", stroke: "#2563eb", svg: `<rect x="4" y="4" width="16" height="16" rx="3"/>` };
+      return `
+        <div class="fallback-art" style="background:${f.bg};">
+          <div class="fallback-icon">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="${f.stroke}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${f.svg}</svg>
+          </div>
+          <span style="font-size:11px;font-weight:800;color:${f.stroke};">${escapeHtml(brand)}</span>
+        </div>
+      `;
+    }
+
+    function handleImgError(imgEl, pid, brand) {
+      imgEl.parentElement.innerHTML = fallbackHtml(pid, brand);
+    }
+
+    function renderCatalog() {
+      const grid = document.getElementById("catalogGrid");
+      const q = (document.getElementById("searchInput")?.value || "").trim().toLowerCase();
+
+      const items = (state.products || []).filter((p) => {
+        const sOk = storeFilter === "ALL" || p.store_id === storeFilter;
+        const qOk = !q || p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q) || p.store_name.toLowerCase().includes(q);
+        return sOk && qOk;
+      });
+
+      if (!items.length) {
+        grid.innerHTML = `<div class="card text-sm muted" style="grid-column:1/-1; text-align:center;">No products found.</div>`;
+        return;
+      }
+
+      grid.innerHTML = items.map((p) => {
+        const inCart = cart[p.id] || 0;
+        const offline = p.is_online === 0;
+        const soldOut = p.available_stock <= 0;
+        const pct = p.total_stock > 0 ? Math.round((p.available_stock / p.total_stock) * 100) : 0;
+        const barColor = pct === 0 ? "#e11d48" : pct <= 45 ? "#f59e0b" : "#10b981";
+        const f = FALLBACK_META[p.id] || { bg: "#eff6ff" };
+
+        return `
+          <div class="product-card ${offline ? "offline" : ""}">
+            <div class="img-stage" style="background: ${f.bg};">
+              <img src="${escapeHtml(p.image_url)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async"
+                   onerror="handleImgError(this, '${p.id}', '${escapeHtml(p.brand)}')" />
+              <div class="img-overlay-top">
+                <span class="badge b-white">${escapeHtml(p.brand)}</span>
+                <span class="badge ${offline ? "b-red" : "b-white"}">
+                  <span class="${offline ? "dot-off" : "dot-live"}" style="width:6px;height:6px;"></span>
+                  ${offline ? "Store Offline" : escapeHtml(p.store_name)}
+                </span>
+              </div>
+            </div>
+
+            <div class="product-body">
+              <div>
+                <div class="font-bold" style="font-size: 15px; word-break: break-word;">${escapeHtml(p.name)}</div>
+                <div class="price" style="margin-top: 3px;">${formatINR(p.price)}</div>
+              </div>
+
+              <div>
+                <div class="row-between text-xs muted">
+                  <span>${soldOut ? "Sold Out" : p.available_stock <= 2 ? "Low Stock" : "In Stock"}</span>
+                  <strong style="color:${barColor};">${p.available_stock} left</strong>
+                </div>
+                <div class="stock-bar">
+                  <div class="stock-bar-fill" style="width:${pct}%; background:${barColor};"></div>
+                </div>
+                ${p.reserved_stock > 0 ? `<div class="text-xs" style="color:var(--sky); margin-top:4px; font-weight:600;">${p.reserved_stock} unit(s) locked in checkouts</div>` : ""}
+              </div>
+
+              <div style="margin-top: auto; padding-top: 6px;">
+                ${inCart > 0 ? `
+                  <div class="qty-ctrl">
+                    <button onclick="updateCart('${p.id}', -1)" class="btn-secondary qty-btn">&minus;</button>
+                    <span class="text-sm font-bold c-primary">${inCart} in cart</span>
+                    <button onclick="updateCart('${p.id}', 1)" class="btn-primary qty-btn">+</button>
+                  </div>
+                ` : `
+                  <button onclick="updateCart('${p.id}', 1)" ${offline || soldOut ? "disabled" : ""}
+                    class="${offline || soldOut ? "btn-secondary" : "btn-primary"} btn-full" style="padding: 11px;">
+                    ${offline ? "Store Unavailable" : soldOut ? "Out of Stock" : "+ Add to Cart"}
+                  </button>
+                `}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function updateCart(pid, delta) {
+      const p = state.products.find((x) => x.id === pid);
+      if (!p) return;
+      const next = (cart[pid] || 0) + delta;
+      if (next <= 0) {
+        delete cart[pid];
+      } else if (next > p.available_stock) {
+        showToast(`Only ${p.available_stock} unit(s) available for ${p.name}.`, true);
+        return;
+      } else {
+        cart[pid] = next;
+      }
+      renderCart();
+      renderCatalog();
+      const cp = document.getElementById("cartPanel");
+      cp.classList.remove("bump");
+      void cp.offsetWidth;
+      cp.classList.add("bump");
+    }
+
+    function clearCart() {
+      cart = {};
+      renderCart();
+      renderCatalog();
+    }
+
+    function renderCart() {
+      const box = document.getElementById("cartItems");
+      const mBar = document.getElementById("mobileCartBar");
+      const entries = Object.entries(cart);
+
+      if (!entries.length) {
+        box.innerHTML = `<div class="card-soft text-xs muted" style="text-align:center; padding: 18px 10px;">Your cart is empty.<br/>Pick items from 1 or more stores to checkout.</div>`;
+        document.getElementById("cartTotal").innerHTML = "&#8377;0";
+        mBar.classList.remove("show");
+        return;
+      }
+
+      let total = 0;
+      let qtySum = 0;
+      const stores = new Set();
+
+      box.innerHTML = entries.map(([pid, qty]) => {
+        const p = state.products.find((x) => x.id === pid);
+        if (!p) return "";
+        stores.add(p.store_name);
+        const line = p.price * qty;
+        total += line;
+        qtySum += qty;
+        return `
+          <div class="card-soft row-between" style="padding: 10px 12px; flex-wrap: nowrap;">
+            <div style="flex:1; min-width:0; word-break:break-word;">
+              <div class="text-xs font-bold">${escapeHtml(p.name)}</div>
+              <div class="text-xs muted">${escapeHtml(p.store_name)} &bull; ${qty} &times; ${formatINR(p.price)}</div>
+            </div>
+            <div class="row-gap" style="flex-shrink:0; flex-wrap:nowrap;">
+              <span class="text-xs font-bold c-primary">${formatINR(line)}</span>
+              <button onclick="updateCart('${pid}', -1)" class="btn-secondary btn-sm">&times;</button>
+            </div>
+          </div>
+        `;
+      }).join("") + `
+        <div class="badge b-indigo" style="width:100%; justify-content:center; padding: 8px; border-radius: 11px;">
+          Splits across ${stores.size} store(s)
+        </div>
+      `;
+
+      document.getElementById("cartTotal").innerHTML = formatINR(total);
+      document.getElementById("mobileBarCount").textContent = `${qtySum} item(s) • ${stores.size} store(s)`;
+      document.getElementById("mobileBarTotal").innerHTML = formatINR(total);
+      mBar.classList.add("show");
+    }
+
+    async function startCheckout() {
+      const items = Object.entries(cart).map(([product_id, qty]) => ({ product_id, qty }));
+      if (!items.length) {
+        showToast("Please add at least one item to your cart.", true);
+        return;
+      }
+      if (isBusy) return;
+      isBusy = true;
+
+      const btn = document.getElementById("checkoutBtn");
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner"></span> Locking stock...`;
+
+      try {
+        const res = await apiCall("/api/orders", {
+          method: "POST",
+          body: JSON.stringify({
+            customer_id: customer.id,
+            customer_name: customer.name,
+            customer_email: customer.email,
+            items,
+            reservation_seconds: 60,
+          }),
+        }, 12000, 0);
+
+        cart = {};
+        res.local_expires_ms = Date.now() + 60000;
+        openPaymentModal(res);
+        renderCart();
+      } catch (err) {
+        const msg = err.message || "Checkout failed.";
+        const isStockErr = err.status === 409 || /out of stock|blocked|offline/i.test(msg);
+        document.getElementById("blockedBadge").textContent = isStockErr ? "Stock Unavailable" : "Connection Issue";
+        document.getElementById("blockedTitle").textContent = isStockErr ? "Order Blocked — Out of Stock!" : "Checkout Timed Out";
+        document.getElementById("blockedMsg").textContent = msg;
+        document.getElementById("blockedModal").classList.remove("hidden");
+      } finally {
+        isBusy = false;
+        btn.disabled = false;
+        btn.innerHTML = `Proceed to Checkout &rarr;`;
+      }
+    }
+
+    function openPaymentModal(orderObj) {
+      activeCheckout = orderObj;
+      const sumBox = document.getElementById("modalOrderSummary");
+      sumBox.innerHTML = `
+        <div class="row-between text-xs">
+          <span class="muted">Order ID</span>
+          <strong style="font-family:Consolas,monospace;">${escapeHtml(orderObj.order_id)}</strong>
+        </div>
+        ${(orderObj.sub_orders || []).map((s) => {
+          const st = state.stores.find((x) => x.id === s.store_id);
+          return `
+            <div class="row-between text-xs" style="border-top:1px dashed var(--border); padding-top:6px;">
+              <span>${escapeHtml(st ? st.name : s.store_id)}</span>
+              <strong>${formatINR(s.amount)}</strong>
+            </div>
+          `;
+        }).join("")}
+      `;
+      document.getElementById("modalPayAmount").innerHTML = formatINR(orderObj.total_amount);
+      document.getElementById("paymentModal").classList.remove("hidden");
+      tickTimers();
+    }
+
+    async function payActiveCheckout() {
+      if (!activeCheckout || isBusy) return;
+      isBusy = true;
+      const payBtn = document.getElementById("modalPayBtn");
+      const cBtn = document.getElementById("modalCancelBtn");
+      payBtn.disabled = true;
+      cBtn.disabled = true;
+      payBtn.innerHTML = `<span class="spinner"></span> Paying...`;
+      try {
+        // 8s timeout + 2 automatic safe retries on the exact same idempotent event_id
+        const res = await apiCall("/api/payments/simulate", {
+          method: "POST",
+          body: JSON.stringify({
+            order_id: activeCheckout.order_id,
+            event_id: activeCheckout.payment_event_id || `PAY-${activeCheckout.order_id}`,
+            event_type: "PAYMENT_SUCCESS",
+          }),
+        }, 8000, 2);
+        document.getElementById("paymentModal").classList.add("hidden");
+        activeCheckout = null;
+        showToast(res.duplicate ? "Payment confirmed!" : res.message);
+        isBusy = false;
+        switchPage("orders");
+      } catch (err) {
+        showToast(err.message, true);
+      } finally {
+        isBusy = false;
+        payBtn.disabled = false;
+        cBtn.disabled = false;
+        payBtn.innerHTML = `Pay Now`;
+      }
+    }
+
+    async function cancelActiveCheckout() {
+      if (!activeCheckout || isBusy) return;
+      isBusy = true;
+      const cBtn = document.getElementById("modalCancelBtn");
+      const payBtn = document.getElementById("modalPayBtn");
+      cBtn.disabled = true;
+      payBtn.disabled = true;
+      try {
+        await apiCall(`/api/orders/${activeCheckout.order_id}/cancel`, { method: "POST" }, 8000, 2);
+        document.getElementById("paymentModal").classList.add("hidden");
+        activeCheckout = null;
+        showToast("Order cancelled & locked stock released.");
+        isBusy = false;
+        await loadCustomerState(true, true);
+      } catch (err) {
+        showToast(err.message, true);
+      } finally {
+        isBusy = false;
+        cBtn.disabled = false;
+        payBtn.disabled = false;
+      }
+    }
+
+    function closeBlockedModal() {
+      document.getElementById("blockedModal").classList.add("hidden");
+      loadCustomerState(true, true);
+    }
+
+    async function payExistingOrder(orderId) {
+      if (isBusy) return;
+      isBusy = true;
+      try {
+        const res = await apiCall("/api/payments/simulate", {
+          method: "POST",
+          body: JSON.stringify({ order_id: orderId, event_id: `PAY-${orderId}`, event_type: "PAYMENT_SUCCESS" }),
+        }, 8000, 2);
+        showToast(res.duplicate ? "Payment confirmed!" : res.message);
+        isBusy = false;
+        await loadCustomerState(true, true);
+      } catch (err) {
+        showToast(err.message, true);
+      } finally {
+        isBusy = false;
+      }
+    }
+
+    async function cancelExistingOrder(orderId) {
+      if (isBusy) return;
+      isBusy = true;
+      try {
+        await apiCall(`/api/orders/${orderId}/cancel`, { method: "POST" }, 8000, 2);
+        showToast("Order cancelled & stock released.");
+        isBusy = false;
+        await loadCustomerState(true, true);
+      } catch (err) {
+        showToast(err.message, true);
+      } finally {
+        isBusy = false;
+      }
+    }
+
+    function statusBadge(st) {
+      const m = {
+        RESERVED: ["b-sky", "RESERVED • PAY NOW"],
+        PAID: ["b-indigo", "PAID • PREPARING"],
+        PARTIALLY_DISPATCHED: ["b-indigo", "PARTIALLY DISPATCHED"],
+        DISPATCHED: ["b-green", "DISPATCHED ✓"],
+        COMPLETED: ["b-green", "COMPLETED ✓"],
+        PARTIALLY_FULFILLED: ["b-green", "PARTIALLY FULFILLED"],
+        FAILED_NEEDS_REFUND: ["b-amber", "STORE OFFLINE • REFUND PENDING"],
+        PARTIAL_FAILURE_ATTENTION: ["b-amber", "PARTIAL FAILURE • REFUND PENDING"],
+        REFUNDED: ["b-purple", "PARTIAL REFUND DONE ✓"],
+        CANCELLED: ["b-gray", "CANCELLED"],
+        EXPIRED: ["b-red", "EXPIRED"],
+      };
+      const [cls, label] = m[st] || ["b-gray", st];
+      return `<span class="badge ${cls}">${label}</span>`;
+    }
+
+    function renderMyOrders() {
+      const list = document.getElementById("myOrdersList");
+      const badge = document.getElementById("ordersCountBadge");
+      const orders = state.my_orders || [];
+      badge.textContent = orders.length;
+      badge.classList.toggle("hidden", orders.length === 0);
+
+      if (!orders.length) {
+        list.innerHTML = `<div class="card text-sm muted" style="text-align:center; padding: 36px 16px;">No orders yet. Go to <strong>Shop Stores</strong> to place your first order!</div>`;
+        return;
+      }
+
+      list.innerHTML = orders.map((o) => `
+        <div class="card stack" style="gap: 12px;">
+          <div class="row-between" style="border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+            <div style="min-width:0;">
+              <div class="row-gap">
+                <span class="font-bold" style="font-size: 16px; font-family: Consolas, monospace;">${escapeHtml(o.id)}</span>
+                ${statusBadge(o.status)}
+              </div>
+              <div class="text-xs muted" style="margin-top: 3px;">
+                Total: <strong>${formatINR(o.total_amount)}</strong> &bull;
+                Paid: <strong class="c-green">${formatINR(o.paid_amount)}</strong>
+                ${o.refunded_amount > 0 ? `&bull; Refunded: <strong class="c-purple">${formatINR(o.refunded_amount)}</strong>` : ""}
+              </div>
+            </div>
+            ${o.status === "RESERVED" ? `
+              <div class="row-gap">
+                <span class="badge b-amber live-countdown" data-expires="${escapeHtml(o.expires_at)}">--:--</span>
+                <button onclick="payExistingOrder('${o.id}')" class="btn-green btn-sm">Pay Now</button>
+                <button onclick="cancelExistingOrder('${o.id}')" class="btn-red-soft btn-sm">Cancel</button>
+              </div>
+            ` : ""}
+          </div>
+
+          <div class="stack" style="gap: 10px;">
+            ${o.sub_orders.map((s) => `
+              <div class="card-soft">
+                <div class="row-between">
+                  <div style="min-width:0; flex:1; word-break:break-word;">
+                    <div class="font-bold text-sm">${escapeHtml(s.store_name)}</div>
+                    <div class="text-xs muted" style="margin-top: 2px;">
+                      ${s.items.map((i) => `${i.qty} &times; ${escapeHtml(i.product_name)}`).join(" • ")}
+                    </div>
+                  </div>
+                  <div style="text-align:right; flex-shrink:0;">
+                    ${statusBadge(s.status)}
+                    <div class="text-xs font-bold c-primary" style="margin-top: 4px;">${formatINR(s.amount)}</div>
+                  </div>
+                </div>
+                ${s.failure_reason ? `<div class="text-xs c-amber font-bold" style="margin-top: 6px;">${escapeHtml(s.failure_reason)}</div>` : ""}
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `).join("");
+
+      tickTimers();
+    }
+
+    function formatRemaining(isoStr) {
+      const serverNow = Date.now() + clockOffsetMs;
+      const diff = Math.max(0, Math.floor((new Date(isoStr).getTime() - serverNow) / 1000));
+      const m = String(Math.floor(diff / 60)).padStart(2, "0");
+      const s = String(diff % 60).padStart(2, "0");
+      return { diff, text: `${m}:${s} left` };
+    }
+
+    function tickTimers() {
+      let expiredNow = false;
+      if (activeCheckout && !document.getElementById("paymentModal").classList.contains("hidden")) {
+        const targetMs = activeCheckout.local_expires_ms || (Date.now() + 60000);
+        const diff = Math.max(0, Math.floor((targetMs - Date.now()) / 1000));
+        const m = String(Math.floor(diff / 60)).padStart(2, "0");
+        const s = String(diff % 60).padStart(2, "0");
+        document.getElementById("modalCountdown").textContent = diff > 0 ? `${m}:${s} left` : "Expired!";
+        if (diff <= 0) {
+          document.getElementById("paymentModal").classList.add("hidden");
+          activeCheckout = null;
+          showToast("60-second timer expired! Locked stock was released.", true);
+          expiredNow = true;
+        }
+      }
+      document.querySelectorAll(".live-countdown").forEach((el) => {
+        const r = formatRemaining(el.dataset.expires);
+        el.textContent = r.diff > 0 ? r.text : "Expired";
+        if (r.diff <= 0) expiredNow = true;
+      });
+      // Trigger AT MOST ONE refresh per expiry (stops DevTunnels flood!)
+      if (expiredNow && !isBusy && !expireRefreshPending) {
+        expireRefreshPending = true;
+        loadCustomerState(true, true);
+      }
+    }
+
+    setInterval(tickTimers, 1000);
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden && customer && !isBusy) {
+        loadCustomerState(true, false);
+      }
+    });
+
+    const saved = localStorage.getItem("trustkart_customer");
+    if (saved) {
+      try { enterCustomerApp(JSON.parse(saved)); } catch { localStorage.removeItem("trustkart_customer"); }
+    }
+  </script>
+</body>
+</html>
